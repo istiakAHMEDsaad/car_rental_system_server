@@ -42,6 +42,25 @@ async function run() {
       res.send(result);
     });
 
+    // --> my posted car by email <--
+    app.get('/all-car/:email', async (req, res) => {
+      const email = req.params.email;
+      const query = { 'author.author_email': email };
+      const result = await carsCollection.find(query).toArray();
+      res.send(result);
+    });
+
+    // --> get data by single id <--
+    // app.get()
+    
+    // --> delete my post <--
+    app.delete('/single-car/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await carsCollection.deleteOne(query);
+      res.send(result);
+    });
+
     // Send a ping to confirm a successful connection
     await client.db('admin').command({ ping: 1 });
     console.log(
