@@ -36,10 +36,16 @@ async function run() {
       res.send(result);
     });
 
-    // --> get car information from db <--
+    // --> fetch 6 data from database <--
     app.get('/limited-car', async (req, res) => {
       const limit = parseInt(req.query.limit) || 0;
       const result = await carsCollection.find().limit(limit).toArray();
+      res.send(result);
+    });
+
+    // --> get all car from database <--
+    app.get('/all-car', async (req, res) => {
+      const result = await carsCollection.find().toArray();
       res.send(result);
     });
 
