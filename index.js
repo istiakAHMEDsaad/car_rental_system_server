@@ -58,14 +58,24 @@ async function run() {
       res.send(result);
     });
 
-    // --> save edited data in db <--
-    // app.put()
-
     // --> get data by single id <--
     app.get('/single-car/:id', async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
       const result = await carsCollection.findOne(query);
+      res.send(result);
+    });
+
+    // --> save edited data in db <--
+    app.put('/update-car/:id', async (req, res) => {
+      const id = req.params.id;
+      const carData = req.body;
+      const updated = {
+        $set: carData,
+      };
+      const query = { _id: new ObjectId(id) };
+      const options = { upsert: true };
+      const result = await carsCollection.updateOne(query, updated, options);
       res.send(result);
     });
 
