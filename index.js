@@ -50,14 +50,22 @@ async function run() {
       res.send(result);
     });
 
-    // --> get data by single id <--
-    // app.get()
-    
     // --> delete my post <--
     app.delete('/single-car/:id', async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
       const result = await carsCollection.deleteOne(query);
+      res.send(result);
+    });
+
+    // --> save edited data in db <--
+    // app.put()
+
+    // --> get data by single id <--
+    app.get('/single-car/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await carsCollection.findOne(query);
       res.send(result);
     });
 
