@@ -43,12 +43,6 @@ async function run() {
       res.send(result);
     });
 
-    // --> get all car from database <--
-    app.get('/all-car', async (req, res) => {
-      const result = await carsCollection.find().toArray();
-      res.send(result);
-    });
-
     // --> my posted car by email <--
     app.get('/all-car/:email', async (req, res) => {
       const email = req.params.email;
@@ -83,6 +77,38 @@ async function run() {
       const query = { _id: new ObjectId(id) };
       const options = { upsert: true };
       const result = await carsCollection.updateOne(query, updated, options);
+      res.send(result);
+    });
+
+    // --> get all car from database <--
+    app.get('/all-car', async (req, res) => {
+      const search = req.query.search;
+      const filter = req.query.filter;
+
+      let query = {
+        model: {
+          $regex: search || '',
+          $options: 'i', //case-insensitive
+        },
+      };
+
+      let sortOption = {};
+      switch (filter) {
+        case 'ascending':
+          sortOption = { price: 1 };
+          break;
+        case 'descending':
+          sortOption = { price: -1 };
+          break;
+        case 'old':
+          sortOption = { post_date: 1 };
+          break;
+        case 'new':
+          sortOption = { post_date: -1 };
+          break;
+      }
+
+      const result = await carsCollection.find(query).sort(sortOption).toArray();
       res.send(result);
     });
 
