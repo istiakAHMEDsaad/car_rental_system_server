@@ -37,8 +37,9 @@ async function run() {
     });
 
     // --> get car information from db <--
-    app.get('/all-car', async (req, res) => {
-      const result = await carsCollection.find().toArray();
+    app.get('/limited-car', async (req, res) => {
+      const limit = parseInt(req.query.limit) || 0;
+      const result = await carsCollection.find().limit(limit).toArray();
       res.send(result);
     });
 
