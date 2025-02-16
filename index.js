@@ -27,6 +27,7 @@ async function run() {
     await client.connect();
     const db = client.db('car-rental-system');
     const carsCollection = db.collection('cars');
+    const bookingCollection = db.collection('booking');
 
     // --> save car information in database <--
     app.post('/add-car', async (req, res) => {
@@ -80,7 +81,7 @@ async function run() {
       res.send(result);
     });
 
-    // --> get all car from database <--
+    // --> get all car data by category from db <--
     app.get('/all-car', async (req, res) => {
       const search = req.query.search;
       const filter = req.query.filter;
@@ -108,11 +109,37 @@ async function run() {
           break;
       }
 
-      const result = await carsCollection.find(query).sort(sortOption).toArray();
+      const result = await carsCollection
+        .find(query)
+        .sort(sortOption)
+        .toArray();
       res.send(result);
     });
 
-    // Send a ping to confirm a successful connection
+    // <== save booking user data in db ==>
+    app.post('/add-carBook', async (req, res) => {
+      //check duplicate booking
+      const bookingData = req.body;
+      const query = {
+        bookingMail: bookingData.bookingMail,
+        bookId: bookingData.bookId,
+      };
+      const alreadyBooked = await bookingCollection.findOne(query);
+      if (alreadyBooked) {
+        return res.status(400).send('You already booked this car!');
+      }
+      //save
+      const result = await bookingCollection.insertOne(bookingData);
+      //increase
+      const filter = { _id: new ObjectId(bookingData.bookId) };
+      const update = {
+        $inc: { book_count: 1 },
+      };
+      await bookingCollection.updateOne(filter, update);
+      res.send(result);
+    });
+
+    //remove
     await client.db('admin').command({ ping: 1 });
     console.log(
       'Pinged your deployment. You successfully connected to MongoDB!'
