@@ -135,7 +135,7 @@ async function run() {
       const update = {
         $inc: { book_count: 1 },
       };
-      await bookingCollection.updateOne(filter, update);
+      await carsCollection.updateOne(filter, update);
       res.send(result);
     });
 
@@ -149,16 +149,13 @@ async function run() {
       res.send(result);
     });
 
-    // <== update status ==>
+    // <== booking status update ==>
     app.patch('/booking-status-update/:id', async (req, res) => {
       const id = req.params.id;
       const { bookingStatus } = req.body;
 
-      console.log("received id", id)
-      console.log("status", bookingStatus)
-
       if (!bookingStatus) {
-        return res.status(400).send({ message: "bookingStatus is missing!" });
+        return res.status(400).send({ message: 'bookingStatus is missing!' });
       }
 
       const filter = { _id: new ObjectId(id) };
@@ -167,7 +164,23 @@ async function run() {
       };
       const result = await bookingCollection.updateOne(filter, updated);
       res.send(result);
-      console.log("update", result)
+    });
+
+    // <== date update ==>
+    app.patch('/bookingdate-update/:id', async (req, res) => {
+      const id = req.params.id;
+      const { bookingDate } = req.body;
+
+      if (!bookingDate) {
+        return res.status(400).send({ message: 'date is missing!' });
+      }
+
+      const filter = { _id: new ObjectId(id) };
+      const update = {
+        $set: { bookingDate },
+      };
+      const result = await bookingCollection.updateOne(filter, update);
+      res.send(result);
     });
 
     //remove
