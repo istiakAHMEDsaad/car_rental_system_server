@@ -139,6 +139,37 @@ async function run() {
       res.send(result);
     });
 
+    // <== get specific booking information by email ==>
+    app.get('/my-bookings/:email', async (req, res) => {
+      const email = req.params.email;
+      const query = {
+        bookingMail: email,
+      };
+      const result = await bookingCollection.find(query).toArray();
+      res.send(result);
+    });
+
+    // <== update status ==>
+    app.patch('/booking-status-update/:id', async (req, res) => {
+      const id = req.params.id;
+      const { bookingStatus } = req.body;
+
+      console.log("received id", id)
+      console.log("status", bookingStatus)
+
+      if (!bookingStatus) {
+        return res.status(400).send({ message: "bookingStatus is missing!" });
+      }
+
+      const filter = { _id: new ObjectId(id) };
+      const updated = {
+        $set: { bookingStatus },
+      };
+      const result = await bookingCollection.updateOne(filter, updated);
+      res.send(result);
+      console.log("update", result)
+    });
+
     //remove
     await client.db('admin').command({ ping: 1 });
     console.log(
