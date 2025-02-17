@@ -37,6 +37,12 @@ async function run() {
       res.send(result);
     });
 
+    // --> get all car from db <--
+    app.get('/all-cars', async (req, res) => {
+      const result = await carsCollection.find().toArray();
+      res.send(result);
+    });
+
     // --> fetch 6 data from database <--
     app.get('/limited-car', async (req, res) => {
       const limit = parseInt(req.query.limit) || 0;
@@ -184,12 +190,12 @@ async function run() {
     });
 
     // <== delete booking data ==>
-      app.delete('/delete-booking/:id', async(req, res)=>{
-        const id = req.params.id;
-        const query = {_id: new ObjectId(id)};
-        const result = await bookingCollection.deleteOne(query);
-        res.send(result);
-      })
+    app.delete('/delete-booking/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await bookingCollection.deleteOne(query);
+      res.send(result);
+    });
 
     //remove
     await client.db('admin').command({ ping: 1 });
