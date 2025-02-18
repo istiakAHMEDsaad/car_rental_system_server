@@ -23,8 +23,6 @@ const client = new MongoClient(uri, {
 
 async function run() {
   try {
-    // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
     const db = client.db('car-rental-system');
     const carsCollection = db.collection('cars');
     const bookingCollection = db.collection('booking');
@@ -33,7 +31,6 @@ async function run() {
     app.post('/add-car', async (req, res) => {
       const carData = req.body;
       const result = await carsCollection.insertOne(carData);
-      console.log(result);
       res.send(result);
     });
 
@@ -97,6 +94,7 @@ async function run() {
           $regex: search || '',
           $options: 'i', //case-insensitive
         },
+        available: 'yes'
       };
 
       let sortOption = {};
@@ -197,14 +195,10 @@ async function run() {
       res.send(result);
     });
 
-    //remove
-    await client.db('admin').command({ ping: 1 });
     console.log(
       'Pinged your deployment. You successfully connected to MongoDB!'
     );
   } finally {
-    // Ensures that the client will close when you finish/error
-    // await client.close();
   }
 }
 run().catch(console.dir);
